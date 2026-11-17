@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import {
   Github,
   Linkedin,
@@ -19,16 +19,13 @@ import {
 } from 'lucide-react';
 import { ForensicCursor } from '@/components/ForensicCursor';
 import { MMPDTerminal } from '@/components/MMPDTerminal';
+import { BloodSpatterLab } from '@/components/BloodSpatterLab';
+import { ContactDispatchForm } from '@/components/ContactDispatchForm';
+import { GitHubSurveillance } from '@/components/GitHubSurveillance';
+import { ProjectModal, type ProjectData } from '@/components/ProjectModal';
 import { playTapeClick, playSlideTap, setSoundEnabled } from '@/lib/sound';
 
-type Project = {
-  title: string;
-  type: string;
-  description: string;
-  tech: string[];
-  status?: string;
-  github?: string;
-};
+type Project = ProjectData;
 
 const projects: Project[] = [
   {
@@ -37,7 +34,9 @@ const projects: Project[] = [
     description:
       'A secure wallet and payment processing platform with authenticated APIs, transaction history, audit logging and fraud-aware workflows.',
     tech: ['Java 21', 'Spring Boot', 'Spring Security', 'JWT', 'JPA', 'MySQL'],
-    status: 'FEATURED'
+    status: 'FEATURED',
+    github: 'https://github.com/muthyaprasadh/Payment_gateway',
+    fileNo: 'MP-001'
   },
   {
     title: 'HelpHub — Community Assistance',
@@ -45,14 +44,18 @@ const projects: Project[] = [
     description:
       'A real-time community assistance platform connecting people to nearby help through task matching, role-based workflows and live communication.',
     tech: ['React', 'Node.js', 'Express', 'MongoDB', 'WebSockets'],
-    status: 'FEATURED'
+    status: 'FEATURED',
+    github: 'https://github.com/muthyaprasadh/Help_Hub',
+    fileNo: 'MP-002'
   },
   {
     title: 'Smart Farmer Advisory System',
     type: 'Backend',
     description:
       'A serverless agricultural advisory platform combining image-based crop insights with multilingual notifications and voice support.',
-    tech: ['AWS Lambda', 'API Gateway', 'DynamoDB', 'Rekognition', 'SNS', 'Polly']
+    tech: ['AWS Lambda', 'API Gateway', 'DynamoDB', 'Rekognition', 'SNS', 'Polly'],
+    github: 'https://github.com/muthyaprasadh/AWS_farmer_advisory',
+    fileNo: 'MP-003'
   },
   {
     title: 'ContiFood-961 Food Benchmark',
@@ -60,7 +63,8 @@ const projects: Project[] = [
     description:
       'A fine-grained long-tailed food classification benchmark with 961 categories and a research exploration of attention-based visual learning.',
     tech: ['Python', 'PyTorch', 'ResNet-152', 'Computer Vision'],
-    status: 'RESEARCH'
+    status: 'RESEARCH',
+    fileNo: 'MP-004'
   },
   {
     title: 'Cross-Artifact Incident Reconstruction',
@@ -68,21 +72,25 @@ const projects: Project[] = [
     description:
       'An investigation workflow for correlating endpoint and network evidence into a unified incident timeline and relationship graph.',
     tech: ['Python', 'Wireshark', 'KAPE', 'SQLite', 'NetworkX'],
-    status: 'IN PROGRESS'
+    status: 'IN PROGRESS',
+    fileNo: 'MP-005'
   },
   {
     title: 'Parkinson’s Severity Prediction',
     type: 'AI / Research',
     description:
       'A machine-learning application that estimates Motor and Total UPDRS scores using preprocessing, feature engineering and regression models.',
-    tech: ['Python', 'Pandas', 'Scikit-learn', 'Streamlit']
+    tech: ['Python', 'Pandas', 'Scikit-learn', 'Streamlit'],
+    github: 'https://github.com/muthyaprasadh/Parkinson_disease_prediction',
+    fileNo: 'MP-006'
   },
   {
     title: 'Obstacle Avoidance Robot',
     type: 'Hardware',
     description:
       'An autonomous robot that detects obstacles and navigates using ultrasonic sensing and embedded motor control.',
-    tech: ['Arduino Uno', 'Embedded C', 'Ultrasonic Sensor', 'PWM']
+    tech: ['Arduino Uno', 'Embedded C', 'Ultrasonic Sensor', 'PWM'],
+    fileNo: 'MP-007'
   }
 ];
 
@@ -140,6 +148,9 @@ const Index = () => {
   const [query, setQuery] = useState('');
   const [quoteIndex, setQuoteIndex] = useState(0);
   const [sound, setSound] = useState(false);
+  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [dark, setDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('dexter-theme');
@@ -148,12 +159,53 @@ const Index = () => {
     return true;
   });
 
-  const toggleSound = () => {
+  const toggleSound = useCallback(() => {
     const next = !sound;
     setSound(next);
     setSoundEnabled(next);
     if (next) playTapeClick();
-  };
+  }, [sound]);
+
+  useEffect(() => {
+    const handleShortcuts = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setSelectedProject(null);
+        setShowShortcuts(false);
+        setTerminalOpen(false);
+        setMenu(false);
+        return;
+      }
+
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+      const target = event.target as HTMLElement | null;
+      if (
+        target?.isContentEditable ||
+        target?.closest('input, textarea, select, [role="textbox"]') ||
+        selectedProject ||
+        showShortcuts
+      ) {
+        return;
+      }
+
+      switch (event.key.toLowerCase()) {
+        case 't':
+          setTerminalOpen((isOpen) => !isOpen);
+          break;
+        case 'm':
+          setDark((isDark) => !isDark);
+          break;
+        case 's':
+          toggleSound();
+          break;
+        case '?':
+          setShowShortcuts(true);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleShortcuts);
+    return () => window.removeEventListener('keydown', handleShortcuts);
+  }, [selectedProject, showShortcuts, toggleSound]);
 
   useEffect(() => {
     const quoteInterval = setInterval(() => {
@@ -201,7 +253,7 @@ const Index = () => {
   return (
     <main className={dark ? 'site dark' : 'site light'}>
       <ForensicCursor />
-      <MMPDTerminal />
+      <MMPDTerminal open={terminalOpen} onOpenChange={setTerminalOpen} />
 
       {/* NAVIGATION */}
       <header className="topbar">
@@ -218,6 +270,15 @@ const Index = () => {
         </nav>
 
         <div className="top-actions">
+        <button
+          className="icon-btn shortcuts-toggle-btn"
+          aria-label="Show keyboard shortcuts"
+          title="Investigator hotkeys (?)"
+          onClick={() => setShowShortcuts(true)}
+        >
+          ?
+        </button>
+
           <button
             className={`icon-btn sound-toggle-btn ${sound ? 'active' : ''}`}
             aria-label={sound ? "Mute Forensic Audio" : "Enable Forensic Audio"}
@@ -465,6 +526,16 @@ const Index = () => {
               <article
                 className={`project-card ${p.status === 'FEATURED' ? 'blood-slide-card' : ''}`}
                 key={p.title}
+                role="button"
+                tabIndex={0}
+                aria-label={`Open case file: ${p.title}`}
+                onClick={() => setSelectedProject(p)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    setSelectedProject(p);
+                  }
+                }}
                 onMouseEnter={() => playSlideTap()}
               >
                 {p.status === 'FEATURED' && (
@@ -502,18 +573,7 @@ const Index = () => {
 
                 <div className="project-bottom">
                   <span>{p.type.toUpperCase()}</span>
-
-                  {p.github && p.github !== '#' ? (
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      SOURCE <ArrowUpRight size={14} />
-                    </a>
-                  ) : (
-                    <span>DETAILS AVAILABLE ON REQUEST</span>
-                  )}
+                  <span className="open-case-label">OPEN CASE FILE <ArrowUpRight size={14} /></span>
                 </div>
               </article>
             ))}
@@ -605,24 +665,8 @@ const Index = () => {
             ))}
           </div>
 
-          <div className="github-note">
-            <Github size={19} />
-
-            <div>
-              <strong>Code lives on GitHub.</strong>
-              <p>
-                Explore repositories and experiments on my profile.
-              </p>
-            </div>
-
-            <a
-              href="https://github.com/muthyaprasadh"
-              target="_blank"
-              rel="noreferrer"
-            >
-              OPEN GITHUB <ArrowUpRight size={15} />
-            </a>
-          </div>
+          <BloodSpatterLab />
+          <GitHubSurveillance />
         </div>
       </section>
 
@@ -655,15 +699,10 @@ const Index = () => {
 
           <p>
             I'm open to internships, engineering opportunities
-            and interesting collaborations.
+            and interesting collaborations. Send a dispatch below.
           </p>
 
-          <a
-            className="primary-btn"
-            href="mailto:muthyakommuru698@gmail.com"
-          >
-            Start a conversation <Mail size={16} />
-          </a>
+          <ContactDispatchForm />
 
           <div className="contact-links">
             <a href="mailto:muthyakommuru698@gmail.com">
@@ -703,6 +742,47 @@ const Index = () => {
           BUILT WITH CURIOSITY <Code2 size={13} />
         </span>
       </footer>
+
+      {selectedProject && (
+        <ProjectModal
+          project={selectedProject}
+          onClose={() => setSelectedProject(null)}
+        />
+      )}
+
+      {showShortcuts && (
+        <div
+          className="shortcuts-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="shortcuts-title"
+          onClick={() => setShowShortcuts(false)}
+        >
+          <div className="shortcuts-panel" onClick={(event) => event.stopPropagation()}>
+            <div className="shortcuts-panel-header">
+              <div>
+                <span className="eyebrow">INVESTIGATOR HOTKEYS</span>
+                <h2 id="shortcuts-title">Quick <em>access.</em></h2>
+              </div>
+              <button
+                type="button"
+                className="icon-btn"
+                onClick={() => setShowShortcuts(false)}
+                aria-label="Close keyboard shortcuts"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <dl className="shortcut-list">
+              <div><dt>T</dt><dd>Toggle Miami Metro PD Terminal</dd></div>
+              <div><dt>M</dt><dd>Toggle dark / light mode</dd></div>
+              <div><dt>S</dt><dd>Toggle forensic sound effects</dd></div>
+              <div><dt>Esc</dt><dd>Close the open modal, terminal, or overlay</dd></div>
+              <div><dt>?</dt><dd>Show this shortcuts panel</dd></div>
+            </dl>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

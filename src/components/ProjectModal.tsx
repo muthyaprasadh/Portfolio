@@ -8,6 +8,7 @@ export interface ProjectData {
   tech: string[];
   status?: string;
   github?: string;
+  liveDemo?: string;
   fileNo?: string;
 }
 
@@ -122,7 +123,14 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
   };
 
   return (
-    <div className="project-modal-backdrop" onClick={onClose} aria-modal="true" role="dialog">
+    <div
+      className="project-modal-backdrop"
+      onClick={onClose}
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="case-file-title"
+      aria-describedby="case-file-summary"
+    >
       <div className="project-modal-window" onClick={(e) => e.stopPropagation()}>
         {/* Modal Top Header */}
         <div className="modal-topbar">
@@ -153,8 +161,8 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
           </div>
 
           <span className="modal-category">{project.type} // CASE DOSSIER</span>
-          <h2 className="modal-project-title">{project.title}</h2>
-          <p className="modal-lead-summary">{project.description}</p>
+          <h2 className="modal-project-title" id="case-file-title">{project.title}</h2>
+          <p className="modal-lead-summary" id="case-file-summary">{project.description}</p>
 
           {/* Key Metrics Strip */}
           <div className="modal-metrics-strip">
@@ -217,6 +225,20 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
 
         {/* Modal Actions Footer */}
         <div className="modal-footer">
+          <div className="modal-links">
+          {project.liveDemo ? (
+            <a
+              href={project.liveDemo}
+              target="_blank"
+              rel="noreferrer"
+              className="modal-action-btn primary"
+              onClick={() => playTapeClick()}
+            >
+              <ExternalLink size={15} />
+              <span>LAUNCH LIVE DEMO</span>
+              <ExternalLink size={13} />
+            </a>
+          ) : null}
           {project.github && project.github !== '#' ? (
             <a
               href={project.github}
@@ -230,10 +252,12 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
               <ExternalLink size={13} />
             </a>
           ) : (
-            <span className="modal-restricted-badge">
-              CLASSIFIED // SOURCE CODE AVAILABLE ON VERIFIED REQUEST
-            </span>
+            <span className="modal-restricted-badge">NO PUBLIC REPOSITORY LINK</span>
           )}
+          {!project.liveDemo && (
+            <span className="modal-restricted-badge">NO PUBLIC DEMO LINK</span>
+          )}
+          </div>
 
           <button
             className="modal-action-btn secondary"

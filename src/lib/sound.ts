@@ -73,7 +73,9 @@ export const playSlideTap = () => {
 
     osc.start();
     osc.stop(audioCtx.currentTime + 0.055);
-  } catch {}
+  } catch {
+    // Audio is an optional enhancement and may be unavailable in some browsers.
+  }
 };
 
 // Retro forensic terminal key blip
@@ -94,5 +96,32 @@ export const playKeyBlip = () => {
 
     osc.start();
     osc.stop(audioCtx.currentTime + 0.03);
-  } catch {}
+  } catch {
+    // Audio is an optional enhancement and may be unavailable in some browsers.
+  }
+};
+
+export const playRadioChirp = () => {
+  if (!soundEnabled || !audioCtx) return;
+  try {
+    const now = audioCtx.currentTime;
+    const oscillator = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(820, now);
+    oscillator.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
+    oscillator.frequency.exponentialRampToValueAtTime(940, now + 0.18);
+
+    gain.gain.setValueAtTime(0.001, now);
+    gain.gain.exponentialRampToValueAtTime(0.055, now + 0.025);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+    oscillator.connect(gain);
+    gain.connect(audioCtx.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.21);
+  } catch {
+    // Audio is an optional enhancement and may be unavailable in some browsers.
+  }
 };

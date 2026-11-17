@@ -2,14 +2,19 @@ import { useState, useRef, useEffect } from 'react';
 import { Crosshair, RotateCcw, Sparkles } from 'lucide-react';
 import { playSlideTap } from '@/lib/sound';
 
+type BloodSample = { x: number; y: number; angle: number; r: number };
+
+const origin = { x: 280, y: 24 };
+
 export const BloodSpatterLab = () => {
   const [width, setWidth] = useState(12); // mm
   const [length, setLength] = useState(24); // mm
   const [angle, setAngle] = useState(30); // degrees
-  const [points, setPoints] = useState<Array<{ x: number; y: number; angle: number; r: number }>>([
-    { x: 120, y: 70, angle: 30, r: 16 },
-    { x: 260, y: 110, angle: 42, r: 14 },
-    { x: 420, y: 80, angle: 25, r: 18 },
+  const [velocity, setVelocity] = useState(3.2);
+  const [points, setPoints] = useState<BloodSample[]>([
+    { x: 120, y: 130, angle: Math.atan2(130 - origin.y, 120 - origin.x), r: 12 },
+    { x: 260, y: 190, angle: Math.atan2(190 - origin.y, 260 - origin.x), r: 14 },
+    { x: 420, y: 135, angle: Math.atan2(135 - origin.y, 420 - origin.x), r: 11 },
   ]);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,20 +52,19 @@ export const BloodSpatterLab = () => {
       ctx.stroke();
     }
 
-    // Draw all blood spatter droplets
+    // Draw each back-projected trajectory toward the simulated origin.
+    ctx.strokeStyle = 'rgba(255, 30, 50, 0.25)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
     points.forEach((pt, i) => {
+      ctx.beginPath();
+      ctx.moveTo(origin.x, origin.y);
+      ctx.lineTo(pt.x, pt.y);
+      ctx.stroke();
+
       ctx.save();
       ctx.translate(pt.x, pt.y);
-      ctx.rotate((pt.angle * Math.PI) / 180);
-
-      // Trajectory string line back to origin
-      ctx.strokeStyle = 'rgba(255, 30, 50, 0.25)';
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(-pt.r * 5, 0);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      ctx.rotate(pt.angle);
 
       // Droplet main ellipse
       ctx.fillStyle = i === points.length - 1 ? '#e21b2d' : '#8f0e1c';
@@ -86,34 +90,41 @@ export const BloodSpatterLab = () => {
 
       ctx.restore();
     });
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle = '#e21b2d';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(origin.x, origin.y, 6, 0, Math.PI * 2);
+    ctx.moveTo(origin.x - 9, origin.y);
+    ctx.lineTo(origin.x + 9, origin.y);
+    ctx.moveTo(origin.x, origin.y - 9);
+    ctx.lineTo(origin.x, origin.y + 9);
+    ctx.stroke();
   }, [points]);
 
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = ((e.clientX - rect.left) / rect.width) * canvas.width;
+    const y = ((e.clientY - rect.top) / rect.height) * canvas.height;
 
-    const newAngle = Math.round(15 + Math.random() * 55);
-    const newWidth = Math.round(8 + Math.random() * 12);
+    const newAngle = Math.round(20 + Math.random() * 50);
+    const newWidth = Math.round(8 + Math.random() * 7);
     const newLength = Math.round(newWidth / Math.sin((newAngle * Math.PI) / 180));
 
     playSlideTap();
     setWidth(newWidth);
     setLength(newLength);
+    setVelocity(Number((0.8 + Math.random() * 7.2).toFixed(1)));
     setPoints((prev) => [
       ...prev.slice(-4), // keep last 5
-      { x, y, angle: newAngle, r: newWidth * 0.9 },
+      { x, y, angle: Math.atan2(y - origin.y, x - origin.x), r: newWidth * 0.9 },
     ]);
   };
 
-  const velocityClass =
-    angle > 50
-      ? 'Low Velocity (< 1.5 m/s — Gravitational Drop)'
-      : angle > 25
-      ? 'Medium Velocity (1.5 – 7.5 m/s — Blunt Force / Cast-off)'
-      : 'High Velocity (> 30 m/s — Fine Mist / High Energy)';
+  const velocityClass = velocity < 1.5 ? 'LOW' : velocity < 7.5 ? 'MEDIUM' : 'HIGH';
 
   return (
     <section className="blood-lab-section">
@@ -124,7 +135,7 @@ export const BloodSpatterLab = () => {
             Blood Spatter <em>Trajectory Lab.</em>
           </h2>
           <p>
-            Dexter Morgan's specialty: calculating angle of impact using \(\sin(\alpha) = \frac{\text{Width}}{\text{Length}}\) and stringing trajectories to determine origin coordinates.
+            Estimate impact angle with sin(α) = width / length, then compare projected trajectories. This interactive simulation is illustrative, not a forensic measurement.
           </p>
         </div>
 
@@ -140,9 +151,12 @@ export const BloodSpatterLab = () => {
                 onClick={() => {
                   playSlideTap();
                   setPoints([
-                    { x: 120, y: 70, angle: 30, r: 16 },
-                    { x: 280, y: 120, angle: 45, r: 14 },
+                    { x: 120, y: 130, angle: Math.atan2(130 - origin.y, 120 - origin.x), r: 16 },
+                    { x: 420, y: 135, angle: Math.atan2(135 - origin.y, 420 - origin.x), r: 14 },
                   ]);
+                  setWidth(12);
+                  setLength(24);
+                  setVelocity(3.2);
                 }}
               >
                 <RotateCcw size={12} /> RESET CANVAS
@@ -164,6 +178,7 @@ export const BloodSpatterLab = () => {
               <span className="canvas-instruction">
                 [CLICK ON GRID TO SIMULATE IMPACT DROPLET]
               </span>
+              <span className="canvas-origin">ESTIMATED ORIGIN // X {origin.x} · Y {origin.y}</span>
             </div>
 
             {/* Telemetry Readouts */}
@@ -185,7 +200,7 @@ export const BloodSpatterLab = () => {
               <div className="telemetry-row">
                 <span className="telemetry-label">VELOCITY PROFILE:</span>
                 <span className="telemetry-value velocity-tag">
-                  {velocityClass}
+                  {velocityClass} // {velocity.toFixed(1)} m/s (SIMULATED)
                 </span>
               </div>
 
@@ -198,7 +213,11 @@ export const BloodSpatterLab = () => {
                     min="4"
                     max="25"
                     value={width}
-                    onChange={(e) => setWidth(Number(e.target.value))}
+                    onChange={(e) => {
+                      const nextWidth = Number(e.target.value);
+                      setWidth(nextWidth);
+                      setLength((currentLength) => Math.max(currentLength, nextWidth));
+                    }}
                     className="lab-slider"
                   />
                 </div>
@@ -219,7 +238,7 @@ export const BloodSpatterLab = () => {
               <div className="lab-note">
                 <Sparkles size={13} className="text-red-500 shrink-0" />
                 <span>
-                  Elliptical elongation reveals trajectory orientation. Origin points align along inverse string projections.
+                  Velocity is randomized for the demo; impact angle alone cannot determine blood-drop velocity. Origin is a fixed simulation reference.
                 </span>
               </div>
             </div>

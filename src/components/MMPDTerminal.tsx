@@ -7,8 +7,18 @@ interface HistoryItem {
   output: string | React.ReactNode;
 }
 
-export const MMPDTerminal = () => {
-  const [open, setOpen] = useState(false);
+interface MMPDTerminalProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const MMPDTerminal = ({ open: controlledOpen, onOpenChange }: MMPDTerminalProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen ?? internalOpen;
+  const setOpen = (nextOpen: boolean) => {
+    if (controlledOpen === undefined) setInternalOpen(nextOpen);
+    onOpenChange?.(nextOpen);
+  };
   const [minimized, setMinimized] = useState(false);
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<HistoryItem[]>([
@@ -29,6 +39,10 @@ export const MMPDTerminal = () => {
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (open) setMinimized(false);
+  }, [open]);
 
   useEffect(() => {
     if (open && !minimized) {
