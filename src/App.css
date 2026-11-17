@@ -1,0 +1,1279 @@
+/* =========================================
+   DEXTER — DOSSIER HOVER TRANSFORMATION
+========================================= */
+
+.dossier.profile-dossier {
+  position: relative;
+  cursor: pointer;
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease,
+    border-color 0.4s ease;
+}
+
+/* Both elements occupy the EXACT SAME grid cell */
+.profile-visual {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 130px;
+  place-items: center;
+
+  position: relative;
+  width: 100%;
+  height: 130px;
+  margin: 18px 0 16px;
+}
+
+/* =========================================
+   ORIGINAL MP MONOGRAM (DEFAULT VIEW)
+========================================= */
+
+.profile-visual .dossier-monogram {
+  grid-area: 1 / 1;
+
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+  margin: 0;
+
+  font: 900 110px/.85 'Barlow Condensed', sans-serif;
+  letter-spacing: -4px;
+  color: #f0e7e1;
+
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+
+  transition:
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.35s;
+}
+
+.profile-visual .dossier-monogram span {
+  color: #df182b;
+}
+
+/* =========================================
+   FAVICON IMAGE (HIDDEN INITIALLY)
+========================================= */
+
+.profile-visual .favicon-reveal {
+  grid-area: 1 / 1;
+
+  position: relative;
+  z-index: 3;
+
+  width: 130px;
+  height: 130px;
+  margin: 0;
+
+  overflow: hidden;
+  background: #090909;
+  border: 1px solid rgba(180, 0, 0, 0.5);
+  border-radius: 2px;
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.92);
+
+  transition:
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.35s,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.profile-visual .favicon-reveal img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+  object-position: center;
+
+  filter: grayscale(15%) brightness(0.95);
+  clip-path: inset(100% 0 0 0);
+
+  transition:
+    filter 0.4s ease,
+    clip-path 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Spacing lock for dossier footer */
+.profile-dossier p {
+  margin: 12px 0 6px;
+}
+
+.profile-dossier small {
+  display: block;
+}
+
+/* =========================================
+   POLICE DO NOT CROSS / DO NOT HOVER TAPE
+========================================= */
+
+.police-tape {
+  position: absolute;
+  z-index: 5;
+  left: -22px;
+  right: -22px;
+  top: 52%;
+  transform: translateY(-50%) rotate(-8deg);
+
+  background: #facc15;
+  color: #000000;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.75);
+  pointer-events: none;
+  border-top: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+
+  opacity: 1;
+  visibility: visible;
+
+  transition:
+    opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0.35s;
+}
+
+.police-tape-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 4px 0;
+  font: 900 8.5px/1 'IBM Plex Mono', monospace;
+  letter-spacing: 1.4px;
+  color: #000000;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.police-tape-hazard {
+  display: inline-block;
+  width: 14px;
+  height: 9px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #000000,
+    #000000 3px,
+    #facc15 3px,
+    #facc15 6px
+  );
+}
+
+/* =========================================
+   MOUSE HOVER — REVEAL
+========================================= */
+
+@media (hover: hover) and (pointer: fine) {
+
+  /* Move away police tape on hover */
+  .profile-dossier:hover .police-tape {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-50%) rotate(-16deg) scale(1.15);
+  }
+
+  /* Cleanly fade out MP monogram */
+  .profile-dossier:hover .dossier-monogram {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.85);
+    pointer-events: none;
+
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease,
+      visibility 0.25s;
+  }
+
+  /* Reveal subject photo */
+  .profile-dossier:hover .favicon-reveal {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1);
+
+    border-color: #e21b2d;
+
+    box-shadow:
+      0 0 15px rgba(226, 27, 45, 0.35),
+      0 0 30px rgba(226, 27, 45, 0.2);
+
+    transition:
+      opacity 0.35s ease,
+      transform 0.35s ease,
+      visibility 0s,
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+
+  /* Reveal photograph with scan */
+  .profile-dossier:hover .favicon-reveal img {
+    filter: grayscale(0%) brightness(1);
+    clip-path: inset(0);
+  }
+
+  /* Dossier glow & subtle lift */
+  .profile-dossier:hover {
+    border-color: #b52230;
+    box-shadow:
+      22px 28px 65px #000c,
+      0 0 25px rgba(226, 27, 45, 0.25),
+      0 0 50px rgba(180, 0, 0, 0.15);
+  }
+
+  /* Forensic laser scanning */
+  .profile-dossier:hover .forensic-scan {
+    animation: dexterScan 1.6s ease-in-out infinite;
+  }
+}
+
+/* Touch fallback */
+.profile-dossier:active .police-tape {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.profile-dossier:active .dossier-monogram {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.profile-dossier:active .favicon-reveal {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  border-color: #e21b2d;
+}
+
+.profile-dossier:active .favicon-reveal img {
+  clip-path: inset(0);
+}
+
+/* =========================================
+   FORENSIC SCAN LINE
+========================================= */
+
+.forensic-scan {
+  position: absolute;
+  z-index: 5;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 2px;
+
+  background: #ff001e;
+
+  box-shadow:
+    0 0 8px #ff001e,
+    0 0 18px #ff001e;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes dexterScan {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+  .profile-visual {
+    grid-template-rows: 120px;
+    height: 120px;
+    margin: 12px 0 12px;
+  }
+
+  .profile-visual .dossier-monogram {
+    font-size: 95px;
+  }
+
+  .profile-visual .favicon-reveal {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* =========================================
+   ACCESSIBILITY
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-visual .dossier-monogram,
+  .profile-visual .favicon-reveal,
+  .profile-visual .favicon-reveal img {
+    transition: none;
+  }
+
+  .forensic-scan {
+    animation: none !important;
+  }
+}
+
+
+/* =========================================
+   THEME TRANSITIONS
+========================================= */
+
+.site,
+.site .topbar,
+.site .dossier,
+.site .project-card,
+.site .skill-group,
+.site .facts-panel,
+.site .github-note,
+.site .projects-section,
+.site .stack-section,
+.site .contact-section {
+  transition:
+    background-color 0.35s ease,
+    background 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.theme-toggle-btn {
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: rotate(15deg) scale(1.08);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.92);
+}
+
+/* About Layout */
+.about-grid {
+  display: block;
+  max-width: 820px;
+}
+
+/* =========================================
+   FORENSIC LAB REPORT — LIGHT THEME (.site.light)
+========================================= */
+
+.site.light {
+  --bg: #f5f2eb;
+  --panel: #ffffff;
+  --panel2: #ece6dc;
+  --text: #221a1b;
+  --muted: #6e5e5f;
+  --line: #dec9cb;
+  --red: #a80918;
+  --bright: #c91425;
+
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 82% 5%, #ffc5cb44, transparent 28%),
+    radial-gradient(ellipse at 10% 40%, #ffc0c622, transparent 30%),
+    var(--bg);
+}
+
+.site.light:before {
+  opacity: 0.05;
+  filter: invert(1);
+}
+
+/* Topbar */
+.site.light .topbar {
+  background: #f5f2ebf2;
+  border-bottom: 1px solid #dec9cb;
+}
+
+.site.light .wordmark {
+  color: #1a1415;
+}
+
+.site.light .desktop-nav a,
+.site.light .mobile-nav a {
+  color: #615052;
+}
+
+.site.light .desktop-nav a:hover,
+.site.light .mobile-nav a:hover {
+  color: #c91425;
+}
+
+.site.light .icon-btn {
+  background: #ede6dc;
+  border: 1px solid #cfb8ba;
+  color: #221a1b;
+}
+
+.site.light .icon-btn:hover {
+  background: #e2d9cd;
+  border-color: #b8989b;
+  color: #c91425;
+}
+
+.site.light .mobile-nav {
+  background: #f5f2eb;
+  border-bottom: 1px solid #dec9cb;
+}
+
+/* Hero Section */
+.site.light .hero-kicker {
+  border-bottom: 1px solid #dec9cb;
+  color: #705e60;
+}
+
+.site.light .hero-index {
+  color: #b81424;
+}
+
+.site.light .hero h1 {
+  color: #1a1415;
+  text-shadow: none;
+}
+
+.site.light .hero h1 em,
+.site.light .section-heading h2 em,
+.site.light .contact-inner h2 em {
+  color: #c91425;
+}
+
+.site.light .hero-copy {
+  color: #554446;
+}
+
+.site.light .text-link {
+  color: #221a1b;
+}
+
+.site.light .text-link:hover {
+  color: #c91425;
+}
+
+.site.light .hero-meta {
+  color: #705e60;
+}
+
+.site.light .hero-coordinate,
+.site.light .scroll-note {
+  color: #7d6b6e;
+}
+
+/* Dossier Card (Light Mode) */
+.site.light .dossier {
+  background: linear-gradient(145deg, #ffffff, #f4ede3 72%);
+  border: 1px solid #c99ca1;
+  box-shadow: 18px 24px 50px rgba(0, 0, 0, 0.12);
+}
+
+.site.light .dossier:before {
+  border: 1px solid #dec4c7;
+}
+
+.site.light .dossier-label,
+.site.light .dossier small {
+  color: #786366;
+}
+
+.site.light .profile-visual .dossier-monogram {
+  color: #1a1415;
+}
+
+.site.light .dossier p {
+  color: #3b2c2e;
+}
+
+.site.light .file-stamp {
+  border-color: #c91425;
+  color: #c91425;
+  background: #fdfaf7dd;
+}
+
+.site.light .redaction {
+  background: #c91425;
+  opacity: 0.75;
+}
+
+/* About Section */
+.site.light .section-heading h2 {
+  color: #1a1415;
+}
+
+.site.light .eyebrow {
+  color: #8a7376;
+}
+
+.site.light .about-copy .lead {
+  color: #1a1415;
+}
+
+.site.light .about-copy p {
+  color: #554446;
+}
+
+.site.light .about-tags span,
+.site.light .tech-list span,
+.site.light .skill-group span {
+  background: #eee7dc;
+  border: 1px solid #d4bfc2;
+  color: #443436;
+}
+
+.site.light .facts-panel {
+  border-top: 1px solid #cfb8ba;
+}
+
+.site.light .facts-panel > div {
+  border-bottom: 1px solid #dec9cb;
+}
+
+.site.light .facts-panel strong {
+  color: #1a1415;
+}
+
+.site.light .facts-panel small {
+  color: #705e60;
+}
+
+/* Projects Section */
+.site.light .projects-section,
+.site.light .stack-section {
+  background: linear-gradient(120deg, #ede7dc, #f7f3ed 55%, #eae3d7);
+  border-top: 1px solid #d4bfc2;
+  border-bottom: 1px solid #d4bfc2;
+}
+
+.site.light .projects-section:before,
+.site.light .stack-section:before {
+  color: #946e73;
+}
+
+.site.light .filter {
+  background: #f4eee6;
+  border: 1px solid #d4bfc2;
+  color: #554446;
+}
+
+.site.light .filter:hover {
+  background: #eae2d6;
+  color: #1a1415;
+}
+
+.site.light .filter.active {
+  background: #a80918;
+  border-color: #c91425;
+  color: #ffffff;
+}
+
+.site.light .search-box {
+  border-bottom: 1px solid #b8989b;
+  color: #705e60;
+}
+
+.site.light .search-box input {
+  color: #1a1415;
+}
+
+.site.light .search-box input::placeholder {
+  color: #947e81;
+}
+
+.site.light .project-card {
+  background: linear-gradient(145deg, #ffffff, #f7f2ea 70%);
+  border: 1px solid #d4bfc2;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.site.light .project-card:hover {
+  border-color: #c91425;
+  box-shadow: 0 12px 35px rgba(168, 9, 24, 0.12);
+}
+
+.site.light .project-card:after {
+  color: #947e81;
+}
+
+.site.light .project-card-top,
+.site.light .project-bottom {
+  color: #705e60;
+}
+
+.site.light .project-bottom {
+  border-top: 1px solid #dec9cb;
+}
+
+.site.light .project-card h3 {
+  color: #1a1415;
+}
+
+.site.light .project-card > p {
+  color: #554446;
+}
+
+.site.light .project-bottom a {
+  color: #221a1b;
+}
+
+.site.light .project-bottom a:hover {
+  color: #c91425;
+}
+
+/* Timeline / Experience */
+.site.light .timeline {
+  border-top: 1px solid #cfb8ba;
+}
+
+.site.light .timeline-item {
+  border-bottom: 1px solid #dec9cb;
+}
+
+.site.light .timeline-date {
+  color: #c91425;
+}
+
+.site.light .timeline-item h3 {
+  color: #1a1415;
+}
+
+.site.light .timeline-item p {
+  color: #554446;
+}
+
+/* Skills / Stack Section */
+.site.light .skill-group {
+  background: linear-gradient(145deg, #ffffff, #f7f2ea);
+  border: 1px solid #d4bfc2;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+}
+
+.site.light .skill-group h3 {
+  color: #1a1415;
+}
+
+.site.light .github-note {
+  background: #f7f2ea;
+  border: 1px solid #d4bfc2;
+}
+
+.site.light .github-note strong {
+  color: #1a1415;
+}
+
+.site.light .github-note p {
+  color: #705e60;
+}
+
+/* Contact Section & Footer */
+.site.light .contact-section {
+  background:
+    radial-gradient(ellipse at 80% 20%, #ffc5cb33, transparent 50%),
+    #ede6dc;
+  border-top: 1px solid #cfb8ba;
+}
+
+.site.light .contact-inner h2 {
+  color: #1a1415;
+}
+
+.site.light .contact-inner > p {
+  color: #554446;
+}
+
+.site.light .contact-links {
+  border-top: 1px solid #d4bfc2;
+}
+
+.site.light .contact-links a {
+  color: #3b2c2e;
+}
+
+.site.light .contact-links a:hover {
+  color: #c91425;
+}
+
+.site.light .footer {
+  color: #857275;
+}
+
+
+/* =========================================
+   DEXTER QUOTES (CENTERED, 10S INTERVAL)
+========================================= */
+
+.dexter-quotes-section {
+  padding: 60px 0 20px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.site .contact-section {
+  margin-top: 50px;
+}
+
+.dexter-quotes-card {
+  border: 1px solid #573238;
+  background: linear-gradient(145deg, #160e10, #0c0b0c 80%);
+  padding: 32px 36px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.dexter-quotes-card:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: #e21b2d;
+  box-shadow: 0 0 12px #e21b2d;
+}
+
+.dexter-quote-content {
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.dexter-quote-text {
+  font: italic 18px/1.65 'Libre Baskerville', serif;
+  color: #f0e7e1;
+  margin: 0 0 12px;
+  text-align: center;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+  animation: fadeQuote 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.dexter-quote-author {
+  font: 10px 'IBM Plex Mono', monospace;
+  letter-spacing: 1.5px;
+  color: #d41427;
+  font-style: normal;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+@keyframes fadeQuote {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Light Theme for Dexter Quotes */
+.site.light .dexter-quotes-section {
+  border-top: none;
+}
+
+.site.light .dexter-quotes-card {
+  border: 1px solid #d4bfc2;
+  background: linear-gradient(145deg, #ffffff, #f7f2ea);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.site.light .dexter-quotes-card:before {
+  background: #a80918;
+  box-shadow: none;
+}
+
+.site.light .dexter-quote-text {
+  color: #1a1415;
+  text-shadow: none;
+}
+
+.site.light .dexter-quote-author {
+  color: #a80918;
+}
+
+
+/* =========================================
+   FORENSIC CROSSHAIR & LUMINOL UV GLOW
+========================================= */
+
+.forensic-cursor-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+}
+
+.luminol-glow {
+  position: absolute;
+  top: -120px;
+  left: -120px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(226, 27, 45, 0.08) 0%, rgba(226, 27, 45, 0.02) 40%, transparent 70%);
+  pointer-events: none;
+}
+
+.forensic-reticle {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 20px;
+  height: 20px;
+}
+
+.reticle-dot {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  width: 3px;
+  height: 3px;
+  background: #ff001e;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #ff001e;
+}
+
+.reticle-line {
+  position: absolute;
+  background: rgba(255, 0, 30, 0.5);
+}
+
+.reticle-line.h-line {
+  top: 10px;
+  left: 0;
+  width: 20px;
+  height: 1px;
+}
+
+.reticle-line.v-line {
+  top: 0;
+  left: 10px;
+  width: 1px;
+  height: 20px;
+}
+
+.reticle-coords {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font: 8px 'IBM Plex Mono', monospace;
+  color: rgba(226, 27, 45, 0.7);
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+/* =========================================
+   MIAMI METRO PD FORENSIC TERMINAL
+========================================= */
+
+.mmpd-trigger-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #120c0e;
+  border: 1px solid #71242c;
+  color: #f0e7e1;
+  font: 10px 'IBM Plex Mono', monospace;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(226, 27, 45, 0.2);
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.mmpd-trigger-btn:hover {
+  transform: translateY(-3px);
+  border-color: #e21b2d;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7), 0 0 25px rgba(226, 27, 45, 0.4);
+}
+
+.mmpd-terminal-window {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 950;
+  width: min(540px, calc(100vw - 32px));
+  background: #0d0a0b;
+  border: 1px solid #8e2b34;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(226, 27, 45, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: termOpen 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes termOpen {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.terminal-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #190e10;
+  border-bottom: 1px solid #572026;
+  font: 10px 'IBM Plex Mono', monospace;
+  letter-spacing: 1px;
+  color: #f0deda;
+}
+
+.terminal-titlebar .title-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terminal-titlebar .title-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.term-btn {
+  background: transparent;
+  border: 1px solid #4d2328;
+  color: #bfaaa6;
+  padding: 4px 6px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all 0.2s;
+}
+
+.term-btn:hover {
+  background: #2b1317;
+  color: #fff;
+  border-color: #8c2a34;
+}
+
+.term-btn.close:hover {
+  background: #a80918;
+  border-color: #e21b2d;
+}
+
+.terminal-body {
+  padding: 14px;
+  max-height: 280px;
+  min-height: 180px;
+  overflow-y: auto;
+  font: 11px/1.6 'IBM Plex Mono', monospace;
+  color: #d8cac6;
+  background: radial-gradient(ellipse at top, #160c0e 0%, #0a0808 80%);
+}
+
+.terminal-shortcuts {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #110c0e;
+  border-top: 1px solid #3d1b20;
+  overflow-x: auto;
+  font: 9px 'IBM Plex Mono', monospace;
+  color: #8e7a76;
+}
+
+.term-pill {
+  background: #1c1012;
+  border: 1px solid #52242a;
+  color: #f0deda;
+  padding: 3px 8px;
+  font: 9px 'IBM Plex Mono', monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.term-pill:hover {
+  background: #94101d;
+  border-color: #df2738;
+  color: #fff;
+}
+
+.terminal-input-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: #0e090a;
+  border-top: 1px solid #4a1d22;
+  gap: 8px;
+}
+
+.prompt-label {
+  font: 11px 'IBM Plex Mono', monospace;
+  color: #e21b2d;
+  white-space: nowrap;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font: 11px 'IBM Plex Mono', monospace;
+}
+
+.terminal-enter-btn {
+  background: #a80918;
+  border: 1px solid #e12a39;
+  color: #fff;
+  padding: 4px 8px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+/* =========================================
+   BLOOD SLIDE BOX — SPECIMEN CARDS
+========================================= */
+
+.project-card.blood-slide-card {
+  position: relative;
+  background: linear-gradient(145deg, #1f1114, #0e0b0c 70%);
+  border: 1px solid rgba(226, 27, 45, 0.45);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(168, 9, 24, 0.08);
+}
+
+.project-card.blood-slide-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #ff0022 0%, #850010 100%);
+  box-shadow: 0 0 12px rgba(255, 0, 34, 0.6);
+}
+
+.blood-slide-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px dashed rgba(226, 27, 45, 0.35);
+  font: 8px 'IBM Plex Mono', monospace;
+  letter-spacing: 1.2px;
+}
+
+.specimen-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ff3b4b;
+  font-weight: 600;
+}
+
+.specimen-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff0022;
+  box-shadow: 0 0 8px #ff0022;
+}
+
+.slide-glass-tag {
+  color: #a88d89;
+  font-size: 7.5px;
+}
+
+.project-card.blood-slide-card:hover {
+  transform: translateY(-7px) scale(1.01);
+  border-color: #ff0026;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 0 0 30px rgba(226, 27, 45, 0.35);
+}
+
+/* =========================================
+   MANILA EVIDENCE FOLDER FILTER TABS
+========================================= */
+
+.filter.folder-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 2px 8px 0 0;
+  position: relative;
+  font: 9px 'IBM Plex Mono', monospace;
+  letter-spacing: 0.8px;
+  transition: all 0.25s ease;
+}
+
+.folder-tab .tab-idx {
+  color: #d04a54;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.filter.folder-tab.active {
+  background: #a80918;
+  border-color: #e21b2d;
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(168, 9, 24, 0.4);
+}
+
+.filter.folder-tab.active .tab-idx {
+  color: #ffd1d5;
+}
+
+/* =========================================
+   CONFIDENTIAL CASE FILE RESUME BUTTON
+========================================= */
+
+.resume-case-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  background: #140d0e;
+  border: 1px solid #7a2b34;
+  color: #f0deda;
+  text-decoration: none;
+  font: 10px 'IBM Plex Mono', monospace;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+}
+
+.resume-case-btn:hover {
+  background: #241114;
+  border-color: #e21b2d;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(226, 27, 45, 0.3);
+}
+
+.resume-case-btn .case-tag {
+  background: #4a141b;
+  color: #ff4d5e;
+  padding: 2px 6px;
+  font-size: 8px;
+  border: 1px solid #731e28;
+}
+
+/* Audio Toggle Button in Topbar */
+.sound-toggle-btn.active {
+  border-color: #e21b2d;
+  color: #e21b2d;
+  box-shadow: 0 0 10px rgba(226, 27, 45, 0.4);
+}
+
+/* Light Theme Overrides */
+.site.light .mmpd-trigger-btn {
+  background: #f7f2ea;
+  border-color: #cfb8ba;
+  color: #1a1415;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.site.light .mmpd-terminal-window {
+  background: #faf6f0;
+  border-color: #c99ca1;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.site.light .terminal-titlebar {
+  background: #eee6db;
+  border-bottom: 1px solid #dec9cb;
+  color: #1a1415;
+}
+
+.site.light .terminal-body {
+  background: #fffdf9;
+  color: #221a1b;
+}
+
+.site.light .terminal-shortcuts {
+  background: #f4eee6;
+  border-top: 1px solid #dec9cb;
+}
+
+.site.light .term-pill {
+  background: #ede6dc;
+  border-color: #d4bfc2;
+  color: #1a1415;
+}
+
+.site.light .terminal-input-bar {
+  background: #fbf8f2;
+  border-top: 1px solid #dec9cb;
+}
+
+.site.light .terminal-input {
+  color: #1a1415;
+}
+
+.site.light .resume-case-btn {
+  background: #f5eedf;
+  border-color: #cbb2b5;
+  color: #1a1415;
+}
+
+.site.light .resume-case-btn:hover {
+  background: #eee3d1;
+  border-color: #a80918;
+}
+
+.site.light .project-card.blood-slide-card {
+  background: linear-gradient(145deg, #ffffff, #fdf6f7 70%);
+  border-color: #e09ba2;
+}
