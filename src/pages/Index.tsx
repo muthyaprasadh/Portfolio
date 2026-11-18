@@ -22,6 +22,7 @@ import { MMPDTerminal } from '@/components/MMPDTerminal';
 import { ProjectModal } from '@/components/ProjectModal';
 import { ContactDispatchForm } from '@/components/ContactDispatchForm';
 import { GitHubSurveillance } from '@/components/GitHubSurveillance';
+import { CinematicIntro } from '@/components/CinematicIntro';
 import { playTapeClick, playSlideTap, setSoundEnabled } from '@/lib/sound';
 
 type Project = {
@@ -232,6 +233,7 @@ const Index = () => {
 
   return (
     <main className={dark ? 'site dark' : 'site light'}>
+      <CinematicIntro />
       <ForensicCursor />
       <MMPDTerminal />
       <ProjectModal project={selectedProject ? { ...selectedProject, fileNo: `MP-${String(projects.indexOf(selectedProject) + 1).padStart(3, '0')}` } : null} onClose={() => setSelectedProject(null)} />
