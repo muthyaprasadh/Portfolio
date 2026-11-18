@@ -1321,10 +1321,10 @@
 .dispatch-stamp { border:3px double #e21b2d; color:#ed3343; font:900 20px 'Barlow Condensed',sans-serif; letter-spacing:.12em; padding:12px 18px; transform:rotate(-7deg); animation:stamp-in .45s cubic-bezier(.2,1.7,.5,1) both; }
 @keyframes stamp-in { from { opacity:0; transform:scale(1.8) rotate(-18deg); } to { opacity:1; transform:scale(1) rotate(-7deg); } }
 .github-surveillance { margin-top:28px; }
-.forensic-entry-cta { display:flex; justify-content:flex-end; margin-top:12px; }
-.identify-yourself-btn { display:inline-flex; align-items:center; gap:8px; min-height:34px; padding:0 12px; border:1px solid #6b2b34; background:#100b0c; color:#d5c1bd; font:9px 'IBM Plex Mono',monospace; letter-spacing:.1em; cursor:pointer; transition:border-color .2s,color .2s,background .2s; }
+.forensic-entry-cta { display:flex; justify-content:center; margin:24px 0 8px; }
+.identify-yourself-btn { display:inline-flex; align-items:center; gap:10px; min-height:46px; padding:0 20px; border:1px solid #6b2b34; background:#100b0c; color:#d5c1bd; font:11px 'IBM Plex Mono',monospace; letter-spacing:.12em; cursor:pointer; transition:border-color .2s,color .2s,background .2s,box-shadow .2s; }
 .identify-yourself-btn svg { color:#e21b2d; }
-.identify-yourself-btn:hover,.identify-yourself-btn:focus-visible { border-color:#e21b2d; background:#1b0c0f; color:#fff; outline:none; }
+.identify-yourself-btn:hover,.identify-yourself-btn:focus-visible { border-color:#e21b2d; background:#1b0c0f; color:#fff; box-shadow:0 0 24px #a8091838; outline:none; }
 .surveillance-heading h3 { font:700 28px 'Barlow Condensed',sans-serif; margin:8px 0 0; }
 .surveillance-heading button { border:1px solid #56343a; color:#ddd; background:transparent; padding:9px; cursor:pointer; }
 .surveillance-heading .eyebrow { display:flex; align-items:center; gap:7px; }

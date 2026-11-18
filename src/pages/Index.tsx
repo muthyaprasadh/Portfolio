@@ -686,7 +686,7 @@ const Index = () => {
           </div>
           <div className="forensic-entry-cta">
             <button type="button" className="identify-yourself-btn" onClick={() => setShowForensicDatabase(true)}>
-              <Fingerprint size={15} /> IDENTIFY YOURSELF
+              <Fingerprint size={18} /> IDENTIFY YOURSELF
             </button>
           </div>
         </div>
