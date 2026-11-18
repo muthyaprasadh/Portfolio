@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   Github,
   Linkedin,
@@ -13,7 +13,6 @@ import {
   Moon,
   Code2,
   GraduationCap,
-  Fingerprint,
   Volume2,
   VolumeX,
   FileText
@@ -24,7 +23,6 @@ import { ProjectModal } from '@/components/ProjectModal';
 import { ContactDispatchForm } from '@/components/ContactDispatchForm';
 import { GitHubSurveillance } from '@/components/GitHubSurveillance';
 import { CinematicIntro } from '@/components/CinematicIntro';
-import { FingerprintExperience } from '@/components/FingerprintExperience';
 import { playTapeClick, playSlideTap, setSoundEnabled } from '@/lib/sound';
 
 type Project = {
@@ -152,8 +150,6 @@ const Index = () => {
   const [sound, setSound] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const [showForensicDatabase, setShowForensicDatabase] = useState(false);
-  const closeForensicDatabase = useCallback(() => setShowForensicDatabase(false), []);
   const [dark, setDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('dexter-theme');
@@ -240,7 +236,6 @@ const Index = () => {
       <CinematicIntro />
       <ForensicCursor />
       <MMPDTerminal />
-      {showForensicDatabase && <FingerprintExperience onClose={closeForensicDatabase} />}
       <ProjectModal project={selectedProject ? { ...selectedProject, fileNo: `MP-${String(projects.indexOf(selectedProject) + 1).padStart(3, '0')}` } : null} onClose={() => setSelectedProject(null)} />
       {showShortcuts && (
         <div className="shortcuts-backdrop" role="dialog" aria-modal="true" aria-label="Investigator shortcuts" onClick={() => setShowShortcuts(false)}>
@@ -683,11 +678,6 @@ const Index = () => {
             >
               OPEN GITHUB <ArrowUpRight size={15} />
             </a>
-          </div>
-          <div className="forensic-entry-cta">
-            <button type="button" className="identify-yourself-btn" onClick={() => setShowForensicDatabase(true)}>
-              <Fingerprint size={18} /> IDENTIFY YOURSELF
-            </button>
           </div>
         </div>
       </section>
