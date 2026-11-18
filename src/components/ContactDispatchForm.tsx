@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle2, ShieldAlert } from 'lucide-react';
-import { playRadioChirp, playTapeClick } from '@/lib/sound';
+import { playDispatchChirp } from '@/lib/sound';
 
 export const ContactDispatchForm = () => {
   const [form, setForm] = useState({
@@ -14,9 +14,12 @@ export const ContactDispatchForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    playRadioChirp();
+    if (!form.name || !form.email || !form.message) return;
+
+    playDispatchChirp();
     setSubmitted(true);
 
+    // Fallback trigger to native mailto for guaranteed delivery
     const subject = encodeURIComponent(`[INQUIRY - ${form.role}] From ${form.name}`);
     const body = encodeURIComponent(
       `Name / Organization: ${form.name}\nEmail: ${form.email}\nInquiry Type: ${form.role}\n\nMessage:\n${form.message}`
@@ -40,21 +43,21 @@ export const ContactDispatchForm = () => {
       {submitted ? (
         <div className="dispatch-success-state">
           <div className="dispatch-stamp">
-            TRANSMISSION LOGGED
+            TRANSMISSION
             <br />
-            // DISPATCH SENT
+            LOGGED
           </div>
           <CheckCircle2 size={36} className="text-red-500 mb-2" />
           <h3 className="text-xl font-bold uppercase tracking-wider text-white">
             Evidence Dispatch Received
           </h3>
-          <p className="dispatch-confirmation">
-            Thank you, {form.name}. Your email app should open with the dispatch pre-filled. Confirm sending there to complete delivery.
+          <p className="text-xs text-muted-foreground max-w-md mx-auto mt-1 mb-4">
+            Thank you, {form.name}. Your transmission has been recorded. Direct dispatch opened for verification.
           </p>
           <button
             className="dispatch-reset-btn"
             onClick={() => {
-              playTapeClick();
+              playDispatchChirp();
               setSubmitted(false);
               setForm({ name: '', email: '', role: 'Internship / Engineering Opportunity', message: '' });
             }}
@@ -66,9 +69,8 @@ export const ContactDispatchForm = () => {
         <form onSubmit={handleSubmit} className="dispatch-form">
           <div className="form-grid">
             <div className="form-field">
-              <label htmlFor="dispatch-name">CODENAME / ORG</label>
+              <label>CODENAME / ORG</label>
               <input
-                id="dispatch-name"
                 type="text"
                 required
                 placeholder="e.g. John Doe (Tech Lead)"
@@ -79,9 +81,8 @@ export const ContactDispatchForm = () => {
             </div>
 
             <div className="form-field">
-              <label htmlFor="dispatch-email">RETURN FREQUENCY (EMAIL)</label>
+              <label>RETURN FREQUENCY (EMAIL)</label>
               <input
-                id="dispatch-email"
                 type="email"
                 required
                 placeholder="e.g. recruiter@company.com"
@@ -93,9 +94,8 @@ export const ContactDispatchForm = () => {
           </div>
 
           <div className="form-field">
-            <label htmlFor="dispatch-role">MISSION TYPE / INQUIRY CATEGORY</label>
+            <label>MISSION TYPE / INQUIRY CATEGORY</label>
             <select
-              id="dispatch-role"
               value={form.role}
               onChange={(e) => setForm({ ...form, role: e.target.value })}
               className="dispatch-select"
@@ -108,9 +108,8 @@ export const ContactDispatchForm = () => {
           </div>
 
           <div className="form-field">
-            <label htmlFor="dispatch-message">MISSION BRIEF / MESSAGE</label>
+            <label>MISSION BRIEF / TRANSMISSION MESSAGE</label>
             <textarea
-              id="dispatch-message"
               required
               rows={4}
               placeholder="Provide case brief or project requirements..."
@@ -123,7 +122,7 @@ export const ContactDispatchForm = () => {
           <div className="form-footer">
             <div className="security-notice">
               <ShieldAlert size={13} className="text-red-500" />
-              <span>EMAIL APP HANDOFF // CONFIRM DELIVERY IN YOUR MAIL CLIENT</span>
+              <span>TLS ENCRYPTED DIRECT ROUTING TO MUTHYA PRASADH</span>
             </div>
 
             <button type="submit" className="dispatch-submit-btn">

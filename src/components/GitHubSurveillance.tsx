@@ -1,175 +1,66 @@
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, Github, RefreshCw } from 'lucide-react';
+import { Github, Radio, Activity, RefreshCw } from 'lucide-react';
 
-const username = 'muthyaprasadh';
-
-interface GitHubProfile {
-  public_repos: number;
-}
-
-interface GitHubRepository {
-  language: string | null;
-}
-
-interface GitHubEvent {
-  type: string;
-  created_at: string;
-}
-
-interface SurveillanceData {
-  publicRepos: number;
-  languages: Record<'Java' | 'Python' | 'TypeScript', number>;
-  lastActivity: string | null;
-}
-
-const fetchGitHubJson = async <T,>(url: string, signal: AbortSignal): Promise<T> => {
-  const response = await fetch(url, {
-    headers: { Accept: 'application/vnd.github+json' },
-    signal,
-  });
-
-  if (!response.ok) {
-    throw new Error(
-      response.status === 403
-        ? 'GitHub API rate limit reached. Try again shortly.'
-        : `GitHub API request failed (${response.status}).`
-    );
-  }
-
-  return response.json() as Promise<T>;
-};
+type Repo = { language: string | null; fork: boolean; archived: boolean };
+type Snapshot = { repos: number; languages: Record<string, number>; activity: string; updated: string };
 
 export const GitHubSurveillance = () => {
-  const [data, setData] = useState<SurveillanceData | null>(null);
-  const [error, setError] = useState('');
+  const [data, setData] = useState<Snapshot | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    const controller = new AbortController();
+  const load = async () => {
     setLoading(true);
     setError('');
-
-    Promise.all([
-      fetchGitHubJson<GitHubProfile>(
-        `https://api.github.com/users/${username}`,
-        controller.signal
-      ),
-      fetchGitHubJson<GitHubRepository[]>(
-        `https://api.github.com/users/${username}/repos?per_page=100&type=owner`,
-        controller.signal
-      ),
-      fetchGitHubJson<GitHubEvent[]>(
-        `https://api.github.com/users/${username}/events/public?per_page=1`,
-        controller.signal
-      ),
-    ])
-      .then(([profile, repositories, events]) => {
-        const languages: SurveillanceData['languages'] = {
-          Java: 0,
-          Python: 0,
-          TypeScript: 0,
-        };
-
-        repositories.forEach(({ language }) => {
-          if (language === 'Java' || language === 'Python' || language === 'TypeScript') {
-            languages[language] += 1;
-          }
-        });
-
-        setData({
-          publicRepos: profile.public_repos,
-          languages,
-          lastActivity: events[0]?.created_at ?? null,
-        });
-      })
-      .catch((requestError: unknown) => {
-        if (requestError instanceof Error && requestError.name === 'AbortError') return;
-        setError(
-          requestError instanceof Error
-            ? requestError.message
-            : 'Could not load GitHub surveillance data.'
-        );
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+    try {
+      const [reposResponse, eventsResponse] = await Promise.all([
+        fetch('https://api.github.com/users/muthyaprasadh/repos?per_page=100&sort=updated'),
+        fetch('https://api.github.com/users/muthyaprasadh/events/public?per_page=1')
+      ]);
+      if (!reposResponse.ok) throw new Error('GitHub API is temporarily unavailable.');
+      const repos: Repo[] = await reposResponse.json();
+      const events = eventsResponse.ok ? await eventsResponse.json() : [];
+      const languages: Record<string, number> = {};
+      repos.forEach((repo) => {
+        if (repo.language) languages[repo.language] = (languages[repo.language] || 0) + 1;
       });
+      const lastEvent = events[0]?.created_at ? new Date(events[0].created_at) : null;
+      const activity = lastEvent
+        ? `Last public activity ${new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-Math.round((Date.now() - lastEvent.getTime()) / 86400000), 'day')}`
+        : 'No recent public activity returned';
+      setData({ repos: repos.length, languages, activity, updated: new Date().toLocaleTimeString() });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to load GitHub telemetry.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return () => controller.abort();
-  }, [refreshKey]);
-
-  const activityDate = data?.lastActivity ? new Date(data.lastActivity) : null;
-  const activityDays = activityDate
-    ? (Date.now() - activityDate.getTime()) / (1000 * 60 * 60 * 24)
-    : null;
+  useEffect(() => { load(); }, []);
+  const total = Object.values(data?.languages || {}).reduce((sum, count) => sum + count, 0);
 
   return (
-    <div className="github-surveillance" aria-live="polite">
-      <div className="surveillance-header">
-        <span className="surveillance-title">
-          <Github size={17} /> FIELD SURVEILLANCE // GITHUB
-        </span>
-        <button
-          type="button"
-          className="surveillance-refresh"
-          onClick={() => setRefreshKey((key) => key + 1)}
-          disabled={loading}
-          aria-label="Refresh GitHub stats"
-          title="Refresh GitHub stats"
-        >
-          <RefreshCw size={14} className={loading ? 'refresh-spinning' : ''} />
-          REFRESH
-        </button>
+    <section className="github-surveillance">
+      <div className="surveillance-heading">
+        <div><span className="eyebrow"><Radio size={12} /> LIVE FIELD SURVEILLANCE</span><h3>GitHub <em>telemetry.</em></h3></div>
+        <button onClick={load} aria-label="Refresh GitHub statistics" title="Refresh telemetry"><RefreshCw size={15} className={loading ? 'spin' : ''} /></button>
       </div>
-
-      {error ? (
-        <div className="surveillance-error" role="status">
-          <span>{error}</span>
-          <button type="button" onClick={() => setRefreshKey((key) => key + 1)}>
-            RETRY
-          </button>
-        </div>
-      ) : (
+      {error ? <p className="surveillance-error">{error} <button onClick={load}>RETRY</button></p> : (
         <>
-          <div className="surveillance-stats">
-            <div className="surveillance-stat">
-              <span className="surveillance-label">PUBLIC REPOSITORIES</span>
-              <strong>{loading ? '—' : data?.publicRepos ?? '—'}</strong>
-            </div>
-            <div className="surveillance-stat">
-              <span className="surveillance-label">JAVA REPOSITORIES</span>
-              <strong>{loading ? '—' : data?.languages.Java ?? '—'}</strong>
-            </div>
-            <div className="surveillance-stat">
-              <span className="surveillance-label">PYTHON REPOSITORIES</span>
-              <strong>{loading ? '—' : data?.languages.Python ?? '—'}</strong>
-            </div>
-            <div className="surveillance-stat">
-              <span className="surveillance-label">TYPESCRIPT REPOSITORIES</span>
-              <strong>{loading ? '—' : data?.languages.TypeScript ?? '—'}</strong>
-            </div>
+          <div className="surveillance-metrics">
+            <div><strong>{loading ? '—' : data?.repos ?? 0}</strong><span>PUBLIC REPOSITORIES (LATEST 100)</span></div>
+            <div><strong><Activity size={19} /></strong><span>{loading ? 'CHECKING...' : data?.activity}</span></div>
           </div>
-
-          <div className="surveillance-footer">
-            <span className="activity-status">
-              <span className={`live-dot ${activityDays !== null && activityDays > 30 ? 'quiet-dot' : ''}`} />
-              {loading
-                ? 'CHECKING PUBLIC ACTIVITY...'
-                : !data?.lastActivity
-                ? 'NO RECENT PUBLIC ACTIVITY'
-                : activityDays !== null && activityDays <= 30
-                ? `ACTIVE // LAST EVENT ${activityDate?.toLocaleDateString()}`
-                : `QUIET // LAST EVENT ${activityDate?.toLocaleDateString()}`}
-            </span>
-            <a href={`https://github.com/${username}`} target="_blank" rel="noreferrer">
-              OPEN GITHUB <ArrowUpRight size={14} />
-            </a>
+          <div className="language-breakdown">
+            <span className="eyebrow">PRIMARY LANGUAGE SIGNALS</span>
+            {['Java', 'Python', 'TypeScript', 'JavaScript', 'C++', 'C'].map((language) => {
+              const count = data?.languages[language] || 0;
+              return <div className="language-row" key={language}><span>{language}</span><div><i style={{ width: `${total ? count / total * 100 : 0}%` }} /></div><b>{loading ? '—' : count}</b></div>;
+            })}
           </div>
-          <p className="surveillance-note">
-            Language counts are primary repository languages; activity reflects public events only.
-          </p>
+          <p className="surveillance-foot"><Github size={13} /> SOURCE: GITHUB PUBLIC REST API {data?.updated ? `// UPDATED ${data.updated}` : ''}</p>
         </>
       )}
-    </div>
+    </section>
   );
 };

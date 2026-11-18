@@ -8,7 +8,7 @@ export interface ProjectData {
   tech: string[];
   status?: string;
   github?: string;
-  liveDemo?: string;
+  demo?: string;
   fileNo?: string;
 }
 
@@ -36,7 +36,7 @@ const detailedCaseFiles: Record<string, {
       'Tamper-evident audit logging for all balance adjustments and transfers',
       'Fraud-detection rule engine flagging anomalous velocity and cross-geo attempts'
     ],
-    metrics: ['< 45ms Avg Latency', '100% Idempotent APIs', 'Zero-Trust RBAC']
+    metrics: ['JWT Authentication', 'Idempotent Transactions', 'Audit Logging']
   },
   'HelpHub — Community Assistance': {
     problem: 'During local emergencies and mutual-aid requests, centralized dispatchers cause bottlenecks and slow response times for vulnerable citizens needing immediate assistance.',
@@ -51,7 +51,7 @@ const detailedCaseFiles: Record<string, {
       'Role-based responder verification workflow to prevent unauthorized interventions',
       'Lightweight offline caching for unreliable mobile network conditions'
     ],
-    metrics: ['< 200ms WebSocket Broadcasts', 'GeoSpatial Radius Matching', 'Multi-Role Access']
+    metrics: ['Real-Time Communication', 'Location-Aware Matching', 'Role-Based Workflows']
   },
   'Smart Farmer Advisory System': {
     problem: 'Smallholder agricultural producers lack timely, automated detection of crop pathologies and weather anomalies in regional vernacular dialects.',
@@ -66,7 +66,7 @@ const detailedCaseFiles: Record<string, {
       'Multilingual audio advisory generation for farmers unable to read text notifications',
       'Automated satellite weather telemetry correlation with soil moisture forecasts'
     ],
-    metrics: ['100% Serverless', 'Zero Idle Cost', 'Multilingual Voice AI']
+    metrics: ['Serverless AWS Workflow', 'Image-Based Crop Insights', 'Multilingual Voice Alerts']
   },
   'ContiFood-961 Food Benchmark': {
     problem: 'Fine-grained visual categorization on real-world food imagery suffers from severe class imbalance and long-tailed distributional shifts.',
@@ -80,7 +80,7 @@ const detailedCaseFiles: Record<string, {
       'Generated standardized evaluation benchmark protocol for future dietary AI research',
       'Engineered automated validation splits ensuring zero data leakage'
     ],
-    metrics: ['961 Categories', 'ResNet-152 Baseline', 'Focal Loss Tuning']
+    metrics: ['961 Food Categories', 'Long-Tailed Dataset', 'Visual Learning Baselines']
   },
   'Cross-Artifact Incident Reconstruction': {
     problem: 'Modern security incident response requires tedious manual cross-referencing between disjoint endpoint logs, packet captures, and filesystem timestamps.',
@@ -94,7 +94,7 @@ const detailedCaseFiles: Record<string, {
       'Graph-based attack path discovery pinpointing initial entry vector',
       'Exportable timeline artifacts compatible with MITRE ATT&CK taxonomy'
     ],
-    metrics: ['Automated Graph Traversal', 'PCAP + EVTX Synthesis', 'ATT&CK Alignment']
+    metrics: ['Cross-Artifact Correlation', 'Endpoint + Network Evidence', 'Incident Timeline Graph']
   },
   "Parkinson's Severity Prediction": {
     problem: 'Clinical motor score evaluations (UPDRS) require frequent in-person specialist assessments, causing delays in disease progression monitoring.',
@@ -123,14 +123,7 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
   };
 
   return (
-    <div
-      className="project-modal-backdrop"
-      onClick={onClose}
-      aria-modal="true"
-      role="dialog"
-      aria-labelledby="case-file-title"
-      aria-describedby="case-file-summary"
-    >
+    <div className="project-modal-backdrop" onClick={onClose} aria-modal="true" role="dialog">
       <div className="project-modal-window" onClick={(e) => e.stopPropagation()}>
         {/* Modal Top Header */}
         <div className="modal-topbar">
@@ -161,8 +154,8 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
           </div>
 
           <span className="modal-category">{project.type} // CASE DOSSIER</span>
-          <h2 className="modal-project-title" id="case-file-title">{project.title}</h2>
-          <p className="modal-lead-summary" id="case-file-summary">{project.description}</p>
+          <h2 className="modal-project-title">{project.title}</h2>
+          <p className="modal-lead-summary">{project.description}</p>
 
           {/* Key Metrics Strip */}
           <div className="modal-metrics-strip">
@@ -225,20 +218,12 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
 
         {/* Modal Actions Footer */}
         <div className="modal-footer">
-          <div className="modal-links">
-          {project.liveDemo ? (
-            <a
-              href={project.liveDemo}
-              target="_blank"
-              rel="noreferrer"
-              className="modal-action-btn primary"
-              onClick={() => playTapeClick()}
-            >
-              <ExternalLink size={15} />
-              <span>LAUNCH LIVE DEMO</span>
-              <ExternalLink size={13} />
+          <div className="modal-launch-actions">
+          {project.demo && project.demo !== '#' && (
+            <a href={project.demo} target="_blank" rel="noreferrer" className="modal-action-btn primary" onClick={() => playTapeClick()}>
+              <ExternalLink size={15} /><span>LAUNCH LIVE DEMO</span>
             </a>
-          ) : null}
+          )}
           {project.github && project.github !== '#' ? (
             <a
               href={project.github}
@@ -252,13 +237,12 @@ export const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
               <ExternalLink size={13} />
             </a>
           ) : (
-            <span className="modal-restricted-badge">NO PUBLIC REPOSITORY LINK</span>
+            <span className="modal-restricted-badge">
+              CLASSIFIED // SOURCE CODE AVAILABLE ON VERIFIED REQUEST
+            </span>
           )}
-          {!project.liveDemo && (
-            <span className="modal-restricted-badge">NO PUBLIC DEMO LINK</span>
-          )}
-          </div>
 
+          </div>
           <button
             className="modal-action-btn secondary"
             onClick={() => {
