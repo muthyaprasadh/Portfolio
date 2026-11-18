@@ -1153,13 +1153,8 @@
   position: relative;
   font: 9px 'IBM Plex Mono', monospace;
   letter-spacing: 0.8px;
+  text-transform: none;
   transition: all 0.25s ease;
-}
-
-.folder-tab .tab-idx {
-  color: #d04a54;
-  font-size: 8px;
-  font-weight: 700;
 }
 
 .filter.folder-tab.active {
@@ -1169,8 +1164,37 @@
   box-shadow: 0 4px 15px rgba(168, 9, 24, 0.4);
 }
 
-.filter.folder-tab.active .tab-idx {
-  color: #ffd1d5;
+.project-show-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 40px;
+  margin: 26px auto 0;
+  padding: 0 18px;
+  border: 1px solid #6b2b34;
+  background: #100b0c;
+  color: #d5c1bd;
+  font: 9px 'IBM Plex Mono', monospace;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.project-show-more:hover,
+.project-show-more:focus-visible {
+  border-color: #e21b2d;
+  background: #1b0c0f;
+  color: #ffffff;
+  outline: none;
+}
+
+.project-show-more svg {
+  transition: transform 0.2s ease;
+}
+
+.project-show-more[aria-expanded='true'] svg {
+  transform: rotate(180deg);
 }
 
 /* =========================================

@@ -38,7 +38,7 @@ type Project = {
 const projects: Project[] = [
   {
     title: 'PayFlow — Enterprise Payment Gateway',
-    type: 'Backend',
+    type: 'Fullstack',
     description:
       'A secure wallet and payment processing platform with authenticated APIs, transaction history, audit logging and fraud-aware workflows.',
     tech: ['Java 21', 'Spring Boot', 'Spring Security', 'JWT', 'JPA', 'MySQL'],
@@ -55,7 +55,7 @@ const projects: Project[] = [
   },
   {
     title: 'Smart Farmer Advisory System',
-    type: 'Backend',
+    type: 'Fullstack',
     description:
       'A serverless agricultural advisory platform combining image-based crop insights with multilingual notifications and voice support.',
     tech: ['AWS Lambda', 'API Gateway', 'DynamoDB', 'Rekognition', 'SNS', 'Polly'],
@@ -123,8 +123,6 @@ const skillGroups = [
 
 const filters = [
   'All',
-  'Frontend',
-  'Backend',
   'Fullstack',
   'AI / Research',
   'Security',
@@ -144,6 +142,7 @@ const dexterQuotes = [
 
 const Index = () => {
   const [filter, setFilter] = useState('All');
+  const [showAllProjects, setShowAllProjects] = useState(false);
   const [menu, setMenu] = useState(false);
   const [query, setQuery] = useState('');
   const [quoteIndex, setQuoteIndex] = useState(0);
@@ -222,6 +221,7 @@ const Index = () => {
       ),
     [filter, query]
   );
+  const displayedProjects = showAllProjects ? visible : visible.slice(0, 3);
 
   const nav = [
     ['About', 'about'],
@@ -484,16 +484,16 @@ const Index = () => {
 
           <div className="project-toolbar">
             <div className="filter-row">
-              {filters.map((f, i) => (
+              {filters.map((f) => (
                 <button
                   className={filter === f ? 'filter folder-tab active' : 'filter folder-tab'}
                   key={f}
                   onClick={() => {
                     playSlideTap();
                     setFilter(f);
+                    setShowAllProjects(false);
                   }}
                 >
-                  <span className="tab-idx">0{i + 1}</span>
                   <span>{f}</span>
                 </button>
               ))}
@@ -503,14 +503,17 @@ const Index = () => {
               <Search size={15} />
               <input
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setShowAllProjects(false);
+                }}
                 placeholder="Search projects"
               />
             </label>
           </div>
 
           <div className="project-grid">
-            {visible.map((p, i) => (
+            {displayedProjects.map((p, i) => (
               <article
                 className={`project-card ${p.status === 'FEATURED' ? 'blood-slide-card' : ''}`}
                 key={p.title}
@@ -573,6 +576,17 @@ const Index = () => {
               </article>
             ))}
           </div>
+          {visible.length > 3 && (
+            <button
+              type="button"
+              className="project-show-more"
+              aria-expanded={showAllProjects}
+              onClick={() => setShowAllProjects((showAll) => !showAll)}
+            >
+              {showAllProjects ? 'SHOW LESS' : 'SHOW MORE'}
+              <ChevronDown size={14} />
+            </button>
+          )}
         </div>
       </section>
 
