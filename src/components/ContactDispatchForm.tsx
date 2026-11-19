@@ -73,7 +73,7 @@ export const ContactDispatchForm = () => {
               <input
                 type="text"
                 required
-                placeholder="e.g. John Doe (Tech Lead)"
+                placeholder="Your name or organization"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="dispatch-input"
@@ -85,7 +85,7 @@ export const ContactDispatchForm = () => {
               <input
                 type="email"
                 required
-                placeholder="e.g. recruiter@company.com"
+                placeholder="Your email address"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 className="dispatch-input"

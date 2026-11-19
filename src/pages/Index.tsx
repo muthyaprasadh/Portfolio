@@ -21,37 +21,11 @@ import { ForensicCursor } from '@/components/ForensicCursor';
 import { MMPDTerminal } from '@/components/MMPDTerminal';
 import { ProjectModal } from '@/components/ProjectModal';
 import { ContactDispatchForm } from '@/components/ContactDispatchForm';
-import { GitHubSurveillance } from '@/components/GitHubSurveillance';
+import { SkillArsenal } from '@/components/SkillArsenal';
+import { ResearchPublications } from '@/components/ResearchPublications';
 import { CinematicIntro } from '@/components/CinematicIntro';
 import { projects, type Project } from '@/lib/projects';
 import { playTapeClick, playSlideTap, setSoundEnabled } from '@/lib/sound';
-
-const skillGroups = [
-  {
-    name: 'Languages',
-    items: ['Java', 'Python', 'C', 'C++', 'Kotlin', 'JavaScript', 'TypeScript', 'SQL']
-  },
-  {
-    name: 'Frontend',
-    items: ['React', 'HTML5', 'CSS3', 'Tailwind CSS', 'Jetpack Compose']
-  },
-  {
-    name: 'Backend',
-    items: ['Spring Boot', 'Spring Security', 'Node.js', 'Express.js', 'REST APIs', 'JWT', 'WebSockets']
-  },
-  {
-    name: 'Databases',
-    items: ['MySQL', 'MongoDB', 'DynamoDB']
-  },
-  {
-    name: 'Cloud & DevOps',
-    items: ['AWS Lambda', 'API Gateway', 'S3', 'Git', 'GitHub', 'Maven', 'Docker']
-  },
-  {
-    name: 'AI / Security',
-    items: ['PyTorch', 'Scikit-learn', 'Computer Vision', 'RAG', 'Wireshark', 'ZKPs']
-  }
-];
 
 const filters = [
   'All',
@@ -159,6 +133,7 @@ const Index = () => {
   const nav = [
     ['About', 'about'],
     ['Projects', 'projects'],
+    ['Research', 'research'],
     ['Experience', 'experience'],
     ['Stack', 'stack'],
     ['Contact', 'contact']
@@ -515,6 +490,8 @@ const Index = () => {
         </div>
       </section>
 
+      <ResearchPublications />
+
       {/* EXPERIENCE */}
       <section className="section wrap" id="experience">
         <div className="section-heading">
@@ -575,51 +552,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* TECH STACK */}
-      <section className="section stack-section" id="stack">
-        <div className="wrap">
-          <div className="section-heading">
-            <span className="eyebrow">04 / TOOLKIT</span>
-            <h2>
-              Tools of the <em>trade.</em>
-            </h2>
-          </div>
-
-          <div className="skill-grid">
-            {skillGroups.map((g) => (
-              <div className="skill-group" key={g.name}>
-                <h3>{g.name}</h3>
-
-                <div>
-                  {g.items.map((s) => (
-                    <span key={s}>{s}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <GitHubSurveillance />
-          <div className="github-note">
-            <Github size={19} />
-
-            <div>
-              <strong>Code lives on GitHub.</strong>
-              <p>
-                Explore repositories and experiments on my profile.
-              </p>
-            </div>
-
-            <a
-              href="https://github.com/muthyaprasadh"
-              target="_blank"
-              rel="noreferrer"
-            >
-              OPEN GITHUB <ArrowUpRight size={15} />
-            </a>
-          </div>
-        </div>
-      </section>
+      {/* SKILLS / TOOLKIT */}
+      <SkillArsenal />
 
       {/* DEXTER FORENSIC MONOLOGUE / QUOTES */}
       <section className="dexter-quotes-section">

@@ -196,7 +196,7 @@ export const MMPDTerminal = () => {
           <div className="terminal-titlebar">
             <div className="title-left">
               <span className="live-dot" />
-              <strong>MIAMI METRO PD // FORENSIC TERMINAL</strong>
+              <strong>MUTHYA DB</strong>
             </div>
             <div className="title-actions">
               <button

@@ -749,6 +749,57 @@
   color: #c91425;
 }
 
+.site.light .contact-section .dispatch-form-card {
+  border-color: #d4bfc2;
+  background: linear-gradient(145deg, #fffdfa, #f7f2ea);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
+
+.site.light .contact-section .dispatch-header {
+  border-bottom-color: #d4bfc2;
+}
+
+.site.light .contact-section .dispatch-tag,
+.site.light .contact-section .dispatch-classification {
+  color: #a80918;
+}
+
+.site.light .contact-section .form-field label {
+  color: #705e60;
+}
+
+.site.light .contact-section .dispatch-input,
+.site.light .contact-section .dispatch-select,
+.site.light .contact-section .dispatch-textarea {
+  border-color: #d4bfc2;
+  background: #fffdfa;
+  color: #2a1c1e;
+}
+
+.site.light .contact-section .dispatch-input::placeholder,
+.site.light .contact-section .dispatch-textarea::placeholder {
+  color: #837477;
+  opacity: 1;
+}
+
+.site.light .contact-section .dispatch-input:focus,
+.site.light .contact-section .dispatch-select:focus,
+.site.light .contact-section .dispatch-textarea:focus {
+  border-color: #c91425;
+}
+
+.site.light .contact-section .security-notice {
+  color: #705e60;
+}
+
+.site.light .contact-section .dispatch-success-state h3 {
+  color: #1a1415;
+}
+
+.site.light .contact-section .dispatch-success-state .text-muted-foreground {
+  color: #705e60;
+}
+
 .site.light .footer {
   color: #5d4c50;
   border-top: 1px solid #dec9cb;
