@@ -23,6 +23,36 @@ const detailedCaseFiles: Record<string, {
   highlights: string[];
   metrics: string[];
 }> = {
+  'AI Job Matching Agent': {
+    problem: 'Job discovery and resume matching are repetitive, while automated application submission creates serious risks around privacy and inaccurate claims.',
+    architecture: [
+      'Python CLI and FastAPI service for fetching, searching and reviewing job listings',
+      'BM25 and MiniLM embedding retrieval with reciprocal-rank fusion and optional cross-encoder reranking',
+      'PostgreSQL with pgvector for persistent embeddings, with an in-memory fallback',
+      'SQLite-backed profile and conversation memory with Pydantic-validated application drafts'
+    ],
+    highlights: [
+      'Ranks public listings against role-specific resumes and candidate profile skills',
+      'Uses human approval checkpoints and never submits applications automatically',
+      'Includes Docker Compose deployment and evaluation metrics for retrieval strategies'
+    ],
+    metrics: ['Hybrid Retrieval', 'Human-in-the-Loop', 'Dockerized API']
+  },
+  'Document Q&A Chatbot (RAG)': {
+    problem: 'Users need accurate answers grounded in large document collections without relying only on model memory or manually searching source material.',
+    architecture: [
+      'FastAPI endpoint exposing document-question answering',
+      'PDF ingestion pipeline using PyPDF for document text extraction',
+      'Sentence Transformer embeddings with Endee vector retrieval',
+      'LLM generation step using retrieved document context to compose answers'
+    ],
+    highlights: [
+      'Retrieves relevant source context before generating a response',
+      'Provides a lightweight REST interface for document Q&A',
+      'Separates ingestion, retrieval and generation into modular Python components'
+    ],
+    metrics: ['RAG Pipeline', 'Vector Retrieval', 'FastAPI']
+  },
   'PayFlow — Enterprise Payment Gateway': {
     problem: 'Traditional small-business payment integrations often suffer from fragmented authentication, vulnerable webhooks, and lack of automated fraud-detection workflows.',
     architecture: [

@@ -23,76 +23,8 @@ import { ProjectModal } from '@/components/ProjectModal';
 import { ContactDispatchForm } from '@/components/ContactDispatchForm';
 import { GitHubSurveillance } from '@/components/GitHubSurveillance';
 import { CinematicIntro } from '@/components/CinematicIntro';
+import { projects, type Project } from '@/lib/projects';
 import { playTapeClick, playSlideTap, setSoundEnabled } from '@/lib/sound';
-
-type Project = {
-  title: string;
-  type: string;
-  description: string;
-  tech: string[];
-  status?: string;
-  github?: string;
-  demo?: string;
-};
-
-const projects: Project[] = [
-  {
-    title: 'PayFlow — Enterprise Payment Gateway',
-    type: 'Fullstack',
-    description:
-      'A secure wallet and payment processing platform with authenticated APIs, transaction history, audit logging and fraud-aware workflows.',
-    tech: ['Java 21', 'Spring Boot', 'Spring Security', 'JWT', 'JPA', 'MySQL'],
-    status: 'FEATURED'
-  },
-  {
-    title: 'HelpHub — Community Assistance',
-    type: 'Fullstack',
-    description:
-      'A real-time community assistance platform connecting people to nearby help through task matching, role-based workflows and live communication.',
-    tech: ['React', 'Node.js', 'Express', 'MongoDB', 'WebSockets'],
-    github: 'https://github.com/muthyaprasadh/Help_Hub',
-    status: 'FEATURED'
-  },
-  {
-    title: 'Smart Farmer Advisory System',
-    type: 'Fullstack',
-    description:
-      'A serverless agricultural advisory platform combining image-based crop insights with multilingual notifications and voice support.',
-    tech: ['AWS Lambda', 'API Gateway', 'DynamoDB', 'Rekognition', 'SNS', 'Polly'],
-    github: 'https://github.com/muthyaprasadh/AWS_farmer_advisory'
-  },
-  {
-    title: 'ContiFood-961 Food Benchmark',
-    type: 'AI / Research',
-    description:
-      'A fine-grained long-tailed food classification benchmark with 961 categories and a research exploration of attention-based visual learning.',
-    tech: ['Python', 'PyTorch', 'ResNet-152', 'Computer Vision'],
-    status: 'RESEARCH'
-  },
-  {
-    title: 'Cross-Artifact Incident Reconstruction',
-    type: 'Security',
-    description:
-      'An investigation workflow for correlating endpoint and network evidence into a unified incident timeline and relationship graph.',
-    tech: ['Python', 'Wireshark', 'KAPE', 'SQLite', 'NetworkX'],
-    github: 'https://github.com/muthyaprasadh/IncidentReconstruction',
-    status: 'IN PROGRESS'
-  },
-  {
-    title: 'Parkinson’s Severity Prediction',
-    type: 'AI / Research',
-    description:
-      'A machine-learning application that estimates Motor and Total UPDRS scores using preprocessing, feature engineering and regression models.',
-    tech: ['Python', 'Pandas', 'Scikit-learn', 'Streamlit']
-  },
-  {
-    title: 'Obstacle Avoidance Robot',
-    type: 'Hardware',
-    description:
-      'An autonomous robot that detects obstacles and navigates using ultrasonic sensing and embedded motor control.',
-    tech: ['Arduino Uno', 'Embedded C', 'Ultrasonic Sensor', 'PWM']
-  }
-];
 
 const skillGroups = [
   {
@@ -124,7 +56,8 @@ const skillGroups = [
 const filters = [
   'All',
   'Fullstack',
-  'AI / Research',
+  'AI',
+  'Research',
   'Security',
   'Hardware'
 ];
@@ -145,7 +78,7 @@ const Index = () => {
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [menu, setMenu] = useState(false);
   const [query, setQuery] = useState('');
-  const [quoteIndex, setQuoteIndex] = useState(0);
+  const [quoteIndex, setQuoteIndex] = useState(() => Math.floor(Math.random() * dexterQuotes.length));
   const [sound, setSound] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -328,26 +261,30 @@ const Index = () => {
               <span className="period">.</span>
             </h1>
 
+            <p className="hero-role">
+              ASPIRING SOFTWARE ENGINEER <span>BACKEND · AI · CLOUD · CYBERSECURITY</span>
+            </p>
+
             <p className="hero-copy">
-              I build software that solves real problems — from secure
+              I build software that solves real problems from secure
               backend systems to intelligent applications.
             </p>
 
             <div className="hero-cta">
               <a className="primary-btn" href="#projects">
-                Explore my work <ArrowUpRight size={16} />
+                View Projects <ArrowUpRight size={16} />
               </a>
 
               <a
-                className="resume-case-btn"
+                className="resume-case-btn hero-resume-btn"
                 href="/Muthya_Prasadh_Resume.pdf"
                 download="Muthya_Prasadh_Resume.pdf"
                 onClick={() => playTapeClick()}
-                title="Download Confidential Forensic Dossier Resume (PDF)"
+                title="Download resume PDF"
               >
                 <FileText size={15} />
-                <span>CASE FILE [PDF]</span>
-                <span className="case-tag">SHA-256 ✓</span>
+                <span>Download Resume</span>
+                <span className="case-tag">PDF</span>
               </a>
 
               <a
@@ -448,7 +385,7 @@ const Index = () => {
             <p>
               I'm a Computer Science and Engineering student at
               SRM University-AP, graduating in 2027. I enjoy turning
-              complex ideas into practical software — especially
+              complex ideas into practical software especially
               backend engineering, cloud systems, AI and security.
             </p>
 
@@ -524,24 +461,14 @@ const Index = () => {
                 tabIndex={0}
                 aria-label={`Open case file for ${p.title}`}
               >
-                {p.status === 'FEATURED' && (
-                  <div className="blood-slide-header">
-                    <span className="specimen-label">
-                      <span className="specimen-dot" /> SPECIMEN SLIDE // 0{i + 1}
-                    </span>
-                    <span className="slide-glass-tag">BOROSILICATE GLASS</span>
-                  </div>
-                )}
-
                 <div className="project-card-top">
                   <span>FILE NO. 0{i + 1}</span>
-                  {p.status && <b>{p.status}</b>}
                 </div>
 
                 <div className="project-symbol">
                   {p.type === 'Security'
                     ? '⌁'
-                    : p.type === 'AI / Research'
+                    : p.type === 'AI'
                     ? '◉'
                     : p.type === 'Hardware'
                     ? '⌘'
@@ -569,9 +496,7 @@ const Index = () => {
                     >
                       SOURCE <ArrowUpRight size={14} />
                     </a>
-                  ) : (
-                    <span>DETAILS AVAILABLE ON REQUEST</span>
-                  )}
+                  ) : null}
                 </div>
               </article>
             ))}
@@ -707,6 +632,16 @@ const Index = () => {
               <cite className="dexter-quote-author">
                 — Dexter Morgan, Blood Splatter Analyst
               </cite>
+            </div>
+          </div>
+        </div>
+
+        <div className="quote-walker-track" aria-hidden="true">
+          <div className="quote-walker">
+            <div className="quote-walker-pose">
+              <img className="quote-walker-body" src="/footer-character.png" alt="" />
+              <img className="quote-walker-leg quote-walker-leg-left" src="/footer-character.png" alt="" />
+              <img className="quote-walker-leg quote-walker-leg-right" src="/footer-character.png" alt="" />
             </div>
           </div>
         </div>

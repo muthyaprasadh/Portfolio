@@ -1,6 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Terminal as TerminalIcon, X, Maximize2, Minimize2, CornerDownLeft } from 'lucide-react';
+import { projects } from '@/lib/projects';
 import { playKeyBlip, playTapeClick } from '@/lib/sound';
+
+const terminalQuotes = [
+  'Good engineering turns complexity into clarity.',
+  'Curiosity finds the questions worth solving.',
+  'Build with intent. Improve with every iteration.',
+  'Follow the evidence, then make something useful.'
+];
 
 interface HistoryItem {
   cmd: string;
@@ -11,6 +19,7 @@ export const MMPDTerminal = () => {
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [input, setInput] = useState('');
+  const [quoteIndex, setQuoteIndex] = useState(0);
   const [history, setHistory] = useState<HistoryItem[]>([
     {
       cmd: 'init',
@@ -94,19 +103,15 @@ export const MMPDTerminal = () => {
       case 'projects':
         output = (
           <div className="text-xs space-y-2">
-            <p className="text-red-400 font-bold">PRIMARY EVIDENCE ARCHIVES:</p>
-            <div>
-              <p className="text-white font-semibold">01. PayFlow — Enterprise Payment Gateway</p>
-              <p className="text-muted-foreground">Java 21, Spring Boot, Spring Security, JWT, MySQL</p>
-            </div>
-            <div>
-              <p className="text-white font-semibold">02. HelpHub — Community Assistance Platform</p>
-              <p className="text-muted-foreground">React, Node.js, Express, MongoDB, WebSockets</p>
-            </div>
-            <div>
-              <p className="text-white font-semibold">03. Smart Farmer Advisory System</p>
-              <p className="text-muted-foreground">AWS Lambda, DynamoDB, Rekognition, SNS, Polly</p>
-            </div>
+            <p className="text-red-400 font-bold">PRIMARY EVIDENCE ARCHIVES ({projects.length}):</p>
+            {projects.map((project, index) => (
+              <div key={project.title}>
+                <p className="text-white font-semibold">
+                  {String(index + 1).padStart(2, '0')}. {project.title}
+                </p>
+                <p className="text-muted-foreground">{project.tech.join(', ')}</p>
+              </div>
+            ))}
           </div>
         );
         break;
@@ -122,15 +127,18 @@ export const MMPDTerminal = () => {
         );
         break;
 
-      case 'quote':
+      case 'quote': {
+        const quote = terminalQuotes[quoteIndex];
+        setQuoteIndex((index) => (index + 1) % terminalQuotes.length);
         output = (
           <div className="text-xs italic text-red-300">
-            "Blood never lies. It's the physical evidence of what truly happened."
+            "{quote}"
             <br />
-            <span className="not-italic text-muted-foreground">— Dexter Morgan</span>
+            <span className="not-italic text-muted-foreground">— Engineering Notes</span>
           </div>
         );
         break;
+      }
 
       case 'clear':
         setHistory([]);
